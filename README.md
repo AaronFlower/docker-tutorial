@@ -5,7 +5,7 @@
 [Mac 下载安装](/Users/easonzhan/learning/git_repos/docker-tutorial)
 
 ```powershell
-$ docker version                                                                  ‹ruby-2.2.4›
+$ docker version                                                        
 Client:
  Version:      17.06.0-ce
  API version:  1.30
@@ -21,7 +21,7 @@ Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docke
 Docker 用 Dockerfile 来管理 app, 在这个例子中我们用 php + apache 启动一个服务器。这个简单的例子目录结构为：
 
 ```powershell
-$ tree                                                                            ‹ruby-2.2.4›
+$ tree                                                                  
 .
 ├── Dockerfile
 ├── Readme.md
@@ -50,7 +50,7 @@ EXPOSE 80
 build 我们的 image.
 
 ```powershell
-$ docker build -t hello-world . # 在当前目录下 build 会读取我们 Dockerfile                                                                                                                                                  ‹ruby-2.2.4›
+$ docker build -t hello-world . # 在当前目录下 build 会读取我们 Dockerfile  
 Sending build context to Docker daemon  5.632kB
 Step 1/2 : FROM php:7.1-apache
 7.1-apache: Pulling from library/php
@@ -80,7 +80,7 @@ Successfully tagged hello-world:latest
 build 之后就可运行我们的 docker Image了。因为我本地的机器的 `80` 已经被占用了，所以用 `8086`端口来接收 docker expose 的 `80`  端口。
 
 ```powershell
-$ docker run -p 8086:80 hello-world                                               ‹ruby-2.2.4›
+$ docker run -p 8086:80 hello-world    
 AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
 AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
 [Thu Nov 16 12:30:20.825095 2017] [mpm_prefork:notice] [pid 1] AH00163: Apache/2.4.10 (Debian) PHP/7.1.11 configured -- resuming normal operations
@@ -90,107 +90,119 @@ AH00558: apache2: Could not reliably determine the server's fully qualified doma
 
 通过浏览器访问 `localhost:8086` 就可以看到 `hello world!` 了。
 
+### Docker Images 
 
+Docker 中一个最重要的概念就是 Image 镜像了。上面的我例子中我们 build 了一个镜像。下面是关于 Images 的一些命令。
+
+#### 查看
+```
+➜ docker help images
+
+Usage:  docker images [OPTIONS] [REPOSITORY[:TAG]]
+
+List images
+
+Options:
+  -a, --all             Show all images (default hides intermediate images)
+      --digests         Show digests
+  -f, --filter filter   Filter output based on conditions provided
+      --format string   Pretty-print images using a Go template
+      --no-trunc        Don't truncate output
+  -q, --quiet           Only show numeric IDs
+```
+-  查看所有的镜像
+```
+$ docker images -a
+```
+- 查看 dangling 的镜像
+```
+$ docker images -f dangling=true
+```
+
+#### 删除镜像
+
+
+
+Docker provides a single command that will clean up any resources — images, containers, volumes, and networks — that are dangling (not associated with a container):
+
+```
+docker system prune
+```
+
+### Docker 容器
+通过上面的 `docker run ` 我们就启动了一个容器。
+
+下面是窗口的一些命令。
+
+```
+docker help container
+
+Usage:  docker container COMMAND
+
+Manage containers
+
+Options:
+
+
+Commands:
+  attach      Attach local standard input, output, and error streams to a running container
+  commit      Create a new image from a container's changes
+  cp          Copy files/folders between a container and the local filesystem
+  create      Create a new container
+  diff        Inspect changes to files or directories on a container's filesystem
+  exec        Run a command in a running container
+  export      Export a container's filesystem as a tar archive
+  inspect     Display detailed information on one or more containers
+  kill        Kill one or more running containers
+  logs        Fetch the logs of a container
+  ls          List containers
+  pause       Pause all processes within one or more containers
+  port        List port mappings or a specific mapping for the container
+  prune       Remove all stopped containers
+  rename      Rename a container
+  restart     Restart one or more containers
+  rm          Remove one or more containers
+  run         Run a command in a new container
+  start       Start one or more stopped containers
+  stats       Display a live stream of container(s) resource usage statistics
+  stop        Stop one or more running containers
+  top         Display the running processes of a container
+  unpause     Unpause all processes within one or more containers
+  update      Update configuration of one or more containers
+  wait        Block until one or more containers stop, then print their exit codes
+
+Run 'docker container COMMAND --help' for more information on a command.
+```
+
+- 查看
+```
+docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+e8b4ef599dc4        hello-world         "docker-php-entrypoi…"   23 seconds ago      Up 25 seconds       0.0.0.0:8083->80/tcp   jovial_stallman
+```
 
 ### Hello world 进阶
 
 有个问题，就是当我们的 Image 启动之后，当源文件变更了之后，我们的网站并没有实时刷新。怎样让我们的服务能够实时刷新那？我们用 `docker command --help` 来查看下 run 命令有那些选项。
 ```powershell
-$ docker run --help                                                                                                                                                               ‹ruby-2.2.4›
+$ docker run --help                                                       
 
 Usage:  docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
 
 Run a command in a new container
 
 Options:
-      --add-host list                  Add a custom host-to-IP mapping (host:ip)
-  -a, --attach list                    Attach to STDIN, STDOUT or STDERR
-      --blkio-weight uint16            Block IO (relative weight), between 10 and 1000, or 0 to disable (default 0)
-      --blkio-weight-device list       Block IO weight (relative device weight) (default [])
-      --cap-add list                   Add Linux capabilities
-      --cap-drop list                  Drop Linux capabilities
-      --cgroup-parent string           Optional parent cgroup for the container
-      --cidfile string                 Write the container ID to the file
-      --cpu-period int                 Limit CPU CFS (Completely Fair Scheduler) period
-      --cpu-quota int                  Limit CPU CFS (Completely Fair Scheduler) quota
-      --cpu-rt-period int              Limit CPU real-time period in microseconds
-      --cpu-rt-runtime int             Limit CPU real-time runtime in microseconds
-  -c, --cpu-shares int                 CPU shares (relative weight)
-      --cpus decimal                   Number of CPUs
-      --cpuset-cpus string             CPUs in which to allow execution (0-3, 0,1)
-      --cpuset-mems string             MEMs in which to allow execution (0-3, 0,1)
-  -d, --detach                         Run container in background and print container ID
-      --detach-keys string             Override the key sequence for detaching a container
-      --device list                    Add a host device to the container
-      --device-cgroup-rule list        Add a rule to the cgroup allowed devices list
-      --device-read-bps list           Limit read rate (bytes per second) from a device (default [])
-      --device-read-iops list          Limit read rate (IO per second) from a device (default [])
-      --device-write-bps list          Limit write rate (bytes per second) to a device (default [])
-      --device-write-iops list         Limit write rate (IO per second) to a device (default [])
-      --disable-content-trust          Skip image verification (default true)
-      --dns list                       Set custom DNS servers
-      --dns-option list                Set DNS options
-      --dns-search list                Set custom DNS search domains
-      --entrypoint string              Overwrite the default ENTRYPOINT of the image
-  -e, --env list                       Set environment variables
-      --env-file list                  Read in a file of environment variables
-      --expose list                    Expose a port or a range of ports
-      --group-add list                 Add additional groups to join
-      --health-cmd string              Command to run to check health
-      --health-interval duration       Time between running the check (ms|s|m|h) (default 0s)
-      --health-retries int             Consecutive failures needed to report unhealthy
-      --health-start-period duration   Start period for the container to initialize before starting health-retries countdown (ms|s|m|h) (default 0s)
-      --health-timeout duration        Maximum time to allow one check to run (ms|s|m|h) (default 0s)
-      --help                           Print usage
-  -h, --hostname string                Container host name
-      --init                           Run an init inside the container that forwards signals and reaps processes
-  -i, --interactive                    Keep STDIN open even if not attached
-      --ip string                      IPv4 address (e.g., 172.30.100.104)
-      --ip6 string                     IPv6 address (e.g., 2001:db8::33)
-      --ipc string                     IPC namespace to use
-      --isolation string               Container isolation technology
-      --kernel-memory bytes            Kernel memory limit
-  -l, --label list                     Set meta data on a container
-      --label-file list                Read in a line delimited file of labels
-      --link list                      Add link to another container
-      --link-local-ip list             Container IPv4/IPv6 link-local addresses
-      --log-driver string              Logging driver for the container
-      --log-opt list                   Log driver options
-      --mac-address string             Container MAC address (e.g., 92:d0:c6:0a:29:33)
-  -m, --memory bytes                   Memory limit
-      --memory-reservation bytes       Memory soft limit
-      --memory-swap bytes              Swap limit equal to memory plus swap: '-1' to enable unlimited swap
-      --memory-swappiness int          Tune container memory swappiness (0 to 100) (default -1)
-      --mount mount                    Attach a filesystem mount to the container
-      --name string                    Assign a name to the container
-      --network string                 Connect a container to a network (default "default")
-      --network-alias list             Add network-scoped alias for the container
-      --pids-limit int                 Tune container pids limit (set -1 for unlimited)
-      --privileged                     Give extended privileges to this container
-  -p, --publish list                   Publish a container's port(s) to the host
-  -P, --publish-all                    Publish all exposed ports to random ports
-      --read-only                      Mount the container's root filesystem as read only
-      --restart string                 Restart policy to apply when a container exits (default "no")
-      --rm                             Automatically remove the container when it exits
-      --stop-timeout int               Timeout (in seconds) to stop a container
-      --storage-opt list               Storage driver options for the container
-      --sysctl map                     Sysctl options (default map[])
-      --tmpfs list                     Mount a tmpfs directory
-  -t, --tty                            Allocate a pseudo-TTY
-      --ulimit ulimit                  Ulimit options (default [])
-  -u, --user string                    Username or UID (format: <name|uid>[:<group|gid>])
-      --userns string                  User namespace to use
-      --uts string                     UTS namespace to use
+
   -v, --volume list                    Bind mount a volume
       --volume-driver string           Optional volume driver for the container
       --volumes-from list              Mount volumes from the specified container(s)
   -w, --workdir string                 Working directory inside the container
 ```
-我们可以看到 `-v, --volume list Bind mount a volume` 选项可以将本地目录挂载的到窗口的 volume 上，我们加一个选项就可以做实时刷新了。
+我们可以看到 `-v, --volume list Bind mount a volume` 选项可以将本地目录挂载的到容器的 volume 上，我们加一个选项就可以做实时刷新了。
 
 ```powershell
 $ docker run -v ~/learning/git_repos/docker-tutorial/src:/var/www/html -p 8086:80 hello-world
 ```
 现在我们就可刷新了。
 
-注意： run 时的 options 选项会覆盖 Dockerfile 的配置，所以在运行进会以 run options 会准，但是并不会改变 Image 。在开developemnt 时可以用 options, 在 production 时，要记得重新 build.
+注意： 执行 `run ` 命令中的配置项会覆盖 Dockerfile 文件中的配置，所以在运行时会以 run options 会准，但是并不会改变 Image 。在开发环境中 (developemnt) 可以用 options, 在生产环境中(production) 要记得重新 build.
