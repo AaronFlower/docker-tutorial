@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+    nginx:
+        image: nginx:1.15-alpine
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+        ports:
+            - 9000:9000
+        networks:
+            - mygo
+    goapp1:
+        image: golang:alpine
+        volumes:
+            - ./app1:/go/src/app
+        working_dir: /go/src/app
+        command: /bin/sh -c "go run main.go"
+        ports:
+            - 80
+        networks:
+            - mygo
+        container_name: mygo1
+        restart: always
+
+    goapp2:
+        image: golang:alpine
+        volumes:
+            - ./app2:/go/src/app
+        working_dir: /go/src/app
+        command: /bin/sh -c "go run main.go"
+        ports:
+            - 80
+        networks:
+            - mygo
+        container_name: mygo2
+        restart: always
+
+networks:
+    mygo:
+
