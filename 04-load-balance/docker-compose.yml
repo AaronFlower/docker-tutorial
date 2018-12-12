@@ -1,17 +1,34 @@
 version: '3'
 
 services:
+    nginx:
+        image: nginx:1.15-alpine
+        volumes:
+            - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+        ports:
+            - 9000:9000
+        networks:
+            - myapp
     website1:
         image: nginx:1.15-alpine
         volumes:
             - ./home1:/usr/share/nginx/html
         ports:
-            - 9001:80
-
+            - 80
+        networks:
+            - myapp
+        container_name: website1
+        restart: always
     website2:
         image: nginx:1.15-alpine
         volumes:
             - ./home2:/usr/share/nginx/html
         ports:
-            - 9002:80
+            - 80
+        networks:
+            - myapp
+        container_name: website2
+        restart: always
+networks:
+    myapp:
 
