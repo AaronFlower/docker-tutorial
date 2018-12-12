@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+    website1:
+        image: nginx:1.15-alpine
+        volumes:
+            - ./home1:/usr/share/nginx/html
+        ports:
+            - 9001:80
+
+    website2:
+        image: nginx:1.15-alpine
+        volumes:
+            - ./home2:/usr/share/nginx/html
+        ports:
+            - 9002:80
+
